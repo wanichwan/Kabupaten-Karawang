@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/HasilRekapitulasiDPRDKabupatenKarawang2019_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[-6.607061892822894,106.84839043049261],[-5.923596681868865,107.87893216950745]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_OpenStreetMap_0');
+        map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
+        var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OpenStreetMap_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OpenStreetMap_0;
+        map.addLayer(layer_OpenStreetMap_0);
+        function pop_HasilRekapitulasiDPRDKabupatenKarawang2019_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>Kecamatan</strong><br />' + (feature.properties['Kecamatan'] !== null ? autolinker.link(feature.properties['Kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Kabupaten</strong><br />' + (feature.properties['Kabupaten'] !== null ? autolinker.link(feature.properties['Kabupaten'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Provinsi</strong><br />' + (feature.properties['Provinsi'] !== null ? autolinker.link(feature.properties['Provinsi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PKB</strong><br />' + (feature.properties['PKB'] !== null ? autolinker.link(feature.properties['PKB'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>GERINDRA</strong><br />' + (feature.properties['GERINDRA'] !== null ? autolinker.link(feature.properties['GERINDRA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PDIP</strong><br />' + (feature.properties['PDIP'] !== null ? autolinker.link(feature.properties['PDIP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>GOLKAR</strong><br />' + (feature.properties['GOLKAR'] !== null ? autolinker.link(feature.properties['GOLKAR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>NASDEM</strong><br />' + (feature.properties['NASDEM'] !== null ? autolinker.link(feature.properties['NASDEM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>BERKARYA</strong><br />' + (feature.properties['BERKARYA'] !== null ? autolinker.link(feature.properties['BERKARYA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PKS</strong><br />' + (feature.properties['PKS'] !== null ? autolinker.link(feature.properties['PKS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PERINDO</strong><br />' + (feature.properties['PERINDO'] !== null ? autolinker.link(feature.properties['PERINDO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PPP</strong><br />' + (feature.properties['PPP'] !== null ? autolinker.link(feature.properties['PPP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PSI</strong><br />' + (feature.properties['PSI'] !== null ? autolinker.link(feature.properties['PSI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PAN</strong><br />' + (feature.properties['PAN'] !== null ? autolinker.link(feature.properties['PAN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>HANURA</strong><br />' + (feature.properties['HANURA'] !== null ? autolinker.link(feature.properties['HANURA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>DEMOKRAT</strong><br />' + (feature.properties['DEMOKRAT'] !== null ? autolinker.link(feature.properties['DEMOKRAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PBB</strong><br />' + (feature.properties['PBB'] !== null ? autolinker.link(feature.properties['PBB'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>PKPI</strong><br />' + (feature.properties['PKPI'] !== null ? autolinker.link(feature.properties['PKPI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_HasilRekapitulasiDPRDKabupatenKarawang2019_1_0(feature) {
+            switch(String(feature.properties['Kecamatan'])) {
+                case 'Banyusari':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,245,240,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Batujaya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,240,233,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Ciampel':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,235,225,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cibuaya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,229,217,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cikampek':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,223,209,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cilamaya Kulon':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,214,196,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cilamaya Wetan':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,204,184,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Cilebar':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,195,171,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Jatisari':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,185,159,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Jayakerta':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,175,147,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Karawang Barat':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,164,135,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Karawang Timur':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,153,122,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Klari':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,143,111,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Kota Baru':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,133,101,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Kutawaluya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,122,90,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Lemahabang':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,112,80,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Majalaya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(250,101,71,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pakisjaya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,89,63,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pangkalan':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(244,77,55,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Pedes':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(241,65,48,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Purwasari':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,54,42,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Rawamerta':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(226,45,38,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Rengasdengklok':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,36,34,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Tegalwaru':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(207,27,30,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Telagasari':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(197,22,27,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Telukjambe Barat':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(186,20,25,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Telukjambe Timur':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(176,17,23,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Tempuran':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(165,15,21,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Tirtajaya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(144,10,18,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Tirtamulya':
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(124,5,15,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,0,13,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1');
+        map.getPane('pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1').style.zIndex = 401;
+        map.getPane('pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1').style['mix-blend-mode'] = 'normal';
+        var layer_HasilRekapitulasiDPRDKabupatenKarawang2019_1 = new L.geoJson(json_HasilRekapitulasiDPRDKabupatenKarawang2019_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+            layerName: 'layer_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+            pane: 'pane_HasilRekapitulasiDPRDKabupatenKarawang2019_1',
+            onEachFeature: pop_HasilRekapitulasiDPRDKabupatenKarawang2019_1,
+            style: style_HasilRekapitulasiDPRDKabupatenKarawang2019_1_0,
+        });
+        bounds_group.addLayer(layer_HasilRekapitulasiDPRDKabupatenKarawang2019_1);
+        map.addLayer(layer_HasilRekapitulasiDPRDKabupatenKarawang2019_1);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Hasil Rekapitulasi DPRD Kabupaten Karawang 2019<br /><table><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Banyusari0.png" /></td><td>Banyusari</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Batujaya1.png" /></td><td>Batujaya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Ciampel2.png" /></td><td>Ciampel</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Cibuaya3.png" /></td><td>Cibuaya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Cikampek4.png" /></td><td>Cikampek</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_CilamayaKulon5.png" /></td><td>Cilamaya Kulon</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_CilamayaWetan6.png" /></td><td>Cilamaya Wetan</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Cilebar7.png" /></td><td>Cilebar</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Jatisari8.png" /></td><td>Jatisari</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Jayakerta9.png" /></td><td>Jayakerta</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_KarawangBarat10.png" /></td><td>Karawang Barat</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_KarawangTimur11.png" /></td><td>Karawang Timur</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Klari12.png" /></td><td>Klari</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_KotaBaru13.png" /></td><td>Kota Baru</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Kutawaluya14.png" /></td><td>Kutawaluya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Lemahabang15.png" /></td><td>Lemahabang</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Majalaya16.png" /></td><td>Majalaya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Pakisjaya17.png" /></td><td>Pakisjaya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Pangkalan18.png" /></td><td>Pangkalan</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Pedes19.png" /></td><td>Pedes</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Purwasari20.png" /></td><td>Purwasari</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Rawamerta21.png" /></td><td>Rawamerta</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Rengasdengklok22.png" /></td><td>Rengasdengklok</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Tegalwaru23.png" /></td><td>Tegalwaru</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Telagasari24.png" /></td><td>Telagasari</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_TelukjambeBarat25.png" /></td><td>Telukjambe Barat</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_TelukjambeTimur26.png" /></td><td>Telukjambe Timur</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Tempuran27.png" /></td><td>Tempuran</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Tirtajaya28.png" /></td><td>Tirtajaya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_Tirtamulya29.png" /></td><td>Tirtamulya</td></tr><tr><td style="text-align: center;"><img src="legend/HasilRekapitulasiDPRDKabupatenKarawang2019_1_30.png" /></td><td></td></tr></table>': layer_HasilRekapitulasiDPRDKabupatenKarawang2019_1,"OpenStreetMap": layer_OpenStreetMap_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
